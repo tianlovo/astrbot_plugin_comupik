@@ -114,6 +114,10 @@ class ImageHandler:
         message_id = str(message_obj.message_id)
         timestamp = message_obj.timestamp
 
+        logger.info(
+            f"[_process_message] 开始处理: chat_id={chat_id}, msg_id={message_id}"
+        )
+
         # 获取发送者信息
         sender = message_obj.sender
         sender_id = str(sender.user_id) if sender else ""
@@ -121,16 +125,29 @@ class ImageHandler:
 
         # 获取原始消息对象 (telegram.Update)
         raw_message = message_obj.raw_message
+        logger.info(
+            f"[_process_message] raw_message={raw_message}, type={type(raw_message)}"
+        )
+
         if not raw_message or not hasattr(raw_message, "photo"):
+            logger.warning("[_process_message] raw_message 为空或没有 photo 属性")
             return
 
         # 获取最大尺寸的图片
         photos = raw_message.photo
+        logger.info(
+            f"[_process_message] photos={photos}, count={len(photos) if photos else 0}"
+        )
+
         if not photos:
+            logger.warning("[_process_message] photos 为空")
             return
 
         # 选择最大尺寸的图片
         largest_photo: PhotoSize = max(photos, key=lambda p: p.file_size or 0)
+        logger.info(
+            f"[_process_message] 选择最大图片: file_id={largest_photo.file_id}, size={largest_photo.file_size}"
+        )
         file_id = largest_photo.file_id
         file_size = largest_photo.file_size or 0
         width = largest_photo.width or 0
@@ -140,10 +157,12 @@ class ImageHandler:
         original_url = f"https://t.me/c/{chat_id.replace('-100', '')}/{message_id}"
 
         # 使用AstrBot Telegram适配器下载图片
+        logger.info(f"[_process_message] 开始下载图片: file_id={file_id}")
         image_data = await self._download_image(event, largest_photo)
         if not image_data:
             logger.error(f"[ImageHandler] 下载图片失败: file_id={file_id}")
             return
+        logger.info(f"[_process_message] 图片下载成功: size={len(image_data)} bytes")
 
         # 计算感知哈希
         perceptual_hash = ""
@@ -176,6 +195,8 @@ class ImageHandler:
         # 保存到数据库
         from .database import ImageRecord
 
+        logger.info(f"[_process_message] 准备保存到数据库: file_path={file_path}")
+
         record = ImageRecord(
             message_id=message_id,
             chat_id=chat_id,
@@ -190,7 +211,12 @@ class ImageHandler:
             height=height,
         )
 
+        logger.info(f"[_process_message] 调用 db.add_image: record={record}")
         success, record_id = await self.db.add_image(record)
+        logger.info(
+            f"[_process_message] db.add_image 返回: success={success}, record_id={record_id}"
+        )
+
         if success:
             logger.info(f"[ImageHandler] 图片已保存: id={record_id}, path={file_path}")
         else:
