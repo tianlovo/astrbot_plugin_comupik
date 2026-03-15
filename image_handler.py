@@ -13,6 +13,7 @@ import imagehash
 from PIL import Image
 
 from astrbot.api import logger
+from astrbot.api.message_components import File as FileComponent
 from astrbot.api.message_components import Image as ImageComponent
 from astrbot.core.platform.sources.telegram.tg_event import (
     TelegramPlatformEvent,
@@ -67,6 +68,36 @@ class ImageHandler:
             f"[ImageHandler] 图片处理器初始化完成，监控目标: {self.monitor_targets}"
         )
 
+    def _check_has_image(self, message_chain: list) -> bool:
+        """检查消息链中是否包含图片
+
+        支持直接发送的图片(Image)和以文件形式发送的图片(File)
+
+        Args:
+            message_chain: 消息链
+
+        Returns:
+            是否包含图片
+        """
+        # 支持的图片文件扩展名
+        image_extensions = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".tiff"}
+
+        for comp in message_chain:
+            # 检查是否为图片组件
+            if isinstance(comp, ImageComponent):
+                return True
+
+            # 检查是否为文件组件且是图片文件
+            if isinstance(comp, FileComponent):
+                # 从文件名判断是否为图片
+                file_name = comp.name or ""
+                file_ext = Path(file_name).suffix.lower()
+                if file_ext in image_extensions:
+                    logger.info(f"[_check_has_image] 发现图片文件: {file_name}")
+                    return True
+
+        return False
+
     async def process_telegram_message(self, event: TelegramPlatformEvent) -> None:
         """处理Telegram消息事件
 
@@ -84,9 +115,9 @@ class ImageHandler:
                 logger.info(f"[ImageHandler] 聊天群 {chat_id} 不在监控目标中，跳过")
                 return
 
-            # 检查消息中是否包含图片
+            # 检查消息中是否包含图片（包括直接发送的图片和以文件形式发送的图片）
             message_chain = event.message_obj.message
-            has_image = any(isinstance(comp, ImageComponent) for comp in message_chain)
+            has_image = self._check_has_image(message_chain)
 
             logger.info(
                 f"[ImageHandler] 消息内容: {message_chain}, 包含图片={has_image}"
