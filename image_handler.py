@@ -39,6 +39,7 @@ class ImageHandler:
         self,
         monitor_targets: list[str],
         deduplication_config: dict,
+        storage_config: dict,
         db: "ComuPikDB",
         file_manager: "FileManager",
     ):
@@ -47,12 +48,16 @@ class ImageHandler:
         Args:
             monitor_targets: 监控目标列表
             deduplication_config: 去重配置
+            storage_config: 存储配置
             db: 数据库对象
             file_manager: 文件管理器对象
         """
         self.monitor_targets = set(monitor_targets)
         self.deduplication_enabled = deduplication_config.get("enabled", True)
         self.deduplication_threshold = deduplication_config.get("threshold", 8)
+        self.file_naming_pattern = storage_config.get(
+            "file_naming", "{timestamp}_{msg_id}_{random}"
+        )
         self.db = db
         self.file_manager = file_manager
 
@@ -193,9 +198,9 @@ class ImageHandler:
                 )
                 return
 
-        # 生成文件名并保存
+        # 生成文件名并保存，使用配置的命名模式
         filename = self.file_manager.generate_filename(
-            pattern="{timestamp}_{msg_id}_{random}",
+            pattern=self.file_naming_pattern,
             msg_id=message_id,
             chat_id=chat_id,
             ext=".jpg",

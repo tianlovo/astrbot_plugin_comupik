@@ -80,6 +80,7 @@ class ComuPikPlugin(Star):
             self.image_handler = ImageHandler(
                 self.cfg.monitor_targets,
                 self.cfg.deduplication_config,
+                self.cfg.storage_config,
                 self.db,
                 self.file_manager,
             )
