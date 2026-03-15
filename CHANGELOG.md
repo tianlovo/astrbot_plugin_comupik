@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/lang/zh-CN/spec/v2.0.0.html).
 
+## [1.0.6] - 2026-03-16
+
+### Fixed
+
+- 修复 raw_message 访问 photo 属性的错误
+  - `raw_message` 是 `telegram.Update` 对象
+  - `photo` 属性在 `Update.message` 中，而不是直接在 `Update` 中
+  - 修复图片无法被正确处理的问题
+  - 影响文件: `image_handler.py`
+
 ## [1.0.5] - 2026-03-16
 
 ### Fixed
