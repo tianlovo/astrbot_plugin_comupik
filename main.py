@@ -438,11 +438,11 @@ class ComuPikPlugin(Star):
             stats_text += "━━━━━━━━━━━━━━━━━━"
 
             # 发送消息
-            yield event.plain_result(stats_text)
+            await event.send(event.plain_result(stats_text))
 
         except Exception as e:
             logger.error(f"[ComuPikPlugin] 获取统计信息失败: {e}")
-            yield event.plain_result("❌ 获取统计信息失败，请稍后重试")
+            await event.send(event.plain_result("❌ 获取统计信息失败，请稍后重试"))
 
     async def terminate(self) -> None:
         """插件卸载时清理资源"""
