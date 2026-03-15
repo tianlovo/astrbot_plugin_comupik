@@ -12,7 +12,6 @@ import imagehash
 from PIL import Image
 
 from astrbot.api import logger
-from astrbot.api.event import filter
 from astrbot.api.message_components import Image as ImageComponent
 from astrbot.core.platform.sources.telegram.tg_event import (
     TelegramPlatformEvent,
@@ -62,9 +61,7 @@ class ImageHandler:
             f"[ImageHandler] 图片处理器初始化完成，监控目标: {self.monitor_targets}"
         )
 
-    @filter.platform_adapter_type(filter.PlatformAdapterType.TELEGRAM)
-    @filter.event_message_type(filter.EventMessageType.GROUP_MESSAGE)
-    async def on_telegram_message(self, event: TelegramPlatformEvent) -> None:
+    async def process_telegram_message(self, event: TelegramPlatformEvent) -> None:
         """处理Telegram消息事件
 
         Args:

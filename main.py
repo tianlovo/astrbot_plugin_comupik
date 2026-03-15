@@ -25,7 +25,7 @@ from .image_handler import ImageHandler
     "astrbot_plugin_comupik",
     "ComuPik",
     "Telegram群组/频道图片自动收集、存储管理及API服务插件",
-    "1.0.2",
+    "1.0.3",
 )
 class ComuPikPlugin(Star):
     """ComuPik插件主类
@@ -119,7 +119,7 @@ class ComuPikPlugin(Star):
         """
         try:
             if self.image_handler:
-                await self.image_handler.on_telegram_message(event)
+                await self.image_handler.process_telegram_message(event)
         except Exception as e:
             logger.error(f"[ComuPikPlugin] 处理Telegram消息失败: {e}")
             self._handle_error("消息处理错误", e)
