@@ -5,6 +5,7 @@
 """
 
 import io
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import aiofiles
@@ -260,17 +261,40 @@ class ImageHandler:
                 logger.error("[ImageHandler] 获取文件对象失败")
                 return None
 
-            # 使用AstrBot提供的download_file工具函数下载文件
-            # 该函数封装了文件下载逻辑，支持缓存和错误处理
-            temp_path = await download_file(file_obj.file_path)
+            # 生成临时文件路径，使用 FileManager 的 tmp_dir
+            # 符合 AstrBot 存储规范: data/plugin_data/{plugin_name}/
+            import uuid
 
-            if not temp_path:
-                logger.error("[ImageHandler] 下载文件失败")
+            temp_filename = f"download_{uuid.uuid4().hex}.jpg"
+            temp_path = str(self.file_manager.tmp_dir / temp_filename)
+
+            logger.info(f"[_download_image] 开始下载到临时路径: {temp_path}")
+
+            # 使用AstrBot提供的download_file工具函数下载文件
+            # 需要提供 path 参数指定下载目标路径
+            await download_file(file_obj.file_path, temp_path)
+
+            # 检查文件是否下载成功
+            if not Path(temp_path).exists():
+                logger.error("[ImageHandler] 下载文件失败: 文件不存在")
                 return None
+
+            logger.info(
+                f"[_download_image] 下载完成，文件大小: {Path(temp_path).stat().st_size} bytes"
+            )
 
             # 读取下载的文件内容
             async with aiofiles.open(temp_path, "rb") as f:
-                return await f.read()
+                image_data = await f.read()
+
+            # 清理临时文件
+            try:
+                Path(temp_path).unlink()
+                logger.info(f"[_download_image] 临时文件已清理: {temp_path}")
+            except Exception as e:
+                logger.warning(f"[_download_image] 清理临时文件失败: {e}")
+
+            return image_data
 
         except Exception as e:
             logger.error(f"[ImageHandler] 下载图片失败: {e}")

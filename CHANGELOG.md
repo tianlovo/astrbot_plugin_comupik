@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/lang/zh-CN/spec/v2.0.0.html).
 
+## [1.0.7] - 2026-03-16
+
+### Fixed
+
+- 修复 download_file 调用缺少 path 参数的错误
+  - `download_file` 函数需要提供 `path` 参数指定下载目标
+  - 使用 `FileManager.tmp_dir` 作为临时下载目录，符合 AstrBot 存储规范
+  - 下载完成后自动清理临时文件
+  - 影响文件: `image_handler.py`
+
 ## [1.0.6] - 2026-03-16
 
 ### Fixed
