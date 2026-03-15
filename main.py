@@ -25,7 +25,7 @@ from .image_handler import ImageHandler
     "astrbot_plugin_comupik",
     "ComuPik",
     "Telegram群组/频道图片自动收集、存储管理及API服务插件",
-    "1.0.4",
+    "1.0.5",
 )
 class ComuPikPlugin(Star):
     """ComuPik插件主类
@@ -51,6 +51,8 @@ class ComuPikPlugin(Star):
         # 错误通知去重，记录最近通知的错误
         self._recent_errors: dict[str, float] = {}
         self._error_dedup_window = 300  # 5分钟内不重复通知相同错误
+        # 初始化通知标志，防止重复发送
+        self._init_notification_sent = False
 
     async def initialize(self) -> None:
         """异步初始化插件"""
@@ -96,11 +98,12 @@ class ComuPikPlugin(Star):
 
             logger.info("[ComuPikPlugin] 插件初始化完成")
 
-            # 发送初始化成功通知给超级管理员
-            if self.cfg.super_admin:
+            # 发送初始化成功通知给超级管理员（仅发送一次）
+            if self.cfg.super_admin and not self._init_notification_sent:
                 await self._send_notification(
                     "ComuPik插件初始化成功", "插件已成功初始化并开始运行", "✅"
                 )
+                self._init_notification_sent = True
 
         except Exception as e:
             logger.error(f"[ComuPikPlugin] 插件初始化失败: {e}")

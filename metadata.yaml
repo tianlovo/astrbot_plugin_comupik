@@ -1,7 +1,7 @@
 name: astrbot_plugin_comupik
 display_name: ComuPik 图片收集插件
 desc: Telegram群组/频道图片自动收集、存储管理及API服务插件
-version: v1.0.4
+version: v1.0.5
 author: ComuPik
 repo: https://github.com/tianlovo/astrbot_plugin_comupik
 support_platforms:

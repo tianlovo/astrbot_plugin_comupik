@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/lang/zh-CN/spec/v2.0.0.html).
 
+## [1.0.5] - 2026-03-16
+
+### Fixed
+
+- 修复初始化成功通知重复发送的问题
+  - 添加 `_init_notification_sent` 标志位
+  - 确保初始化成功通知只发送一次
+  - 影响文件: `main.py`
+
 ## [1.0.4] - 2026-03-16
 
 ### Fixed
