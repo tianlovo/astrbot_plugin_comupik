@@ -177,13 +177,14 @@ class ImageMessageHandler(MessageHandler):
                     similarity = max(0, 100 - distance * 10)
 
                     logger.warning(
-                        f"[ImageMessageHandler] 发现重复图片:\n"
+                        f"[ImageMessageHandler] 发现重复图片，跳过保存:\n"
                         f"  - 当前哈希: {perceptual_hash}\n"
                         f"  - 已有哈希: {existing.perceptual_hash}\n"
                         f"  - 汉明距离: {distance}\n"
                         f"  - 相似度: {similarity}%"
                     )
-                    return False
+                    # 重复图片检测成功，返回 True 表示已处理（跳过保存）
+                    return True
 
             # 生成文件名
             filename = context.file_manager.generate_filename(
