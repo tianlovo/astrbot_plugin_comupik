@@ -25,7 +25,7 @@ from .image_handler import ImageHandler
     "astrbot_plugin_comupik",
     "ComuPik",
     "Telegram群组/频道图片自动收集、存储管理及API服务插件",
-    "1.0.1",
+    "1.0.2",
 )
 class ComuPikPlugin(Star):
     """ComuPik插件主类
@@ -290,7 +290,7 @@ class ComuPikPlugin(Star):
 
             # 获取Telegram适配器
             tg_adapter = None
-            for adapter in self.context.platform_manager.platform_adapters:
+            for adapter in self.context.platform_manager.platform_insts:
                 if isinstance(adapter, TelegramPlatformAdapter):
                     tg_adapter = adapter
                     break

@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/lang/zh-CN/spec/v2.0.0.html).
 
+## [1.0.2] - 2026-03-16
+
+### Fixed
+
+- 修复 PlatformManager 属性名错误
+  - 将错误的属性名 `platform_adapters` 更正为 `platform_insts`
+  - 修复错误通知功能无法正常发送的问题
+  - 影响文件: `main.py`
+
 ## [1.0.1] - 2026-03-16
 
 ### Fixed
