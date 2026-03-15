@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/lang/zh-CN/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-03-16
+
+### Changed
+
+- 重构消息处理逻辑，采用接口+适配器设计模式
+  - 新增 `handlers/` 模块目录结构
+  - 定义 `MessageHandler` 抽象接口，统一处理器标准
+  - 实现 `ImageMessageHandler` 适配器 - 处理直接发送的图片（Image组件）
+  - 实现 `FileImageMessageHandler` 适配器 - 处理以文件形式发送的图片（File组件且为图片格式）
+  - 实现 `MessageHandlerFactory` 工厂类 - 根据消息类型创建对应处理器（一对一映射）
+  - 重构 `ImageHandler` 类 - 使用新的处理器架构，直接调用单一处理器
+  - 保持与现有系统的兼容性，不破坏原有功能
+  - 影响文件: `image_handler.py`, `handlers/` 目录
+
 ## [1.0.8] - 2026-03-16
 
 ### Added
