@@ -7,13 +7,12 @@ import time
 import traceback
 from datetime import datetime
 
-from astrbot.core.platform.sources.telegram.telegram_message_event import (
-    TelegramMessageEvent,
-)
-
 from astrbot.api import AstrBotConfig, logger
 from astrbot.api.event import filter
 from astrbot.api.star import Context, Star, register
+from astrbot.core.platform.sources.telegram.tg_event import (
+    TelegramPlatformEvent,
+)
 
 from .api_server import APIServer
 from .config import ComuPikConfig
@@ -26,7 +25,7 @@ from .image_handler import ImageHandler
     "astrbot_plugin_comupik",
     "ComuPik",
     "Telegram群组/频道图片自动收集、存储管理及API服务插件",
-    "1.0.0",
+    "1.0.1",
 )
 class ComuPikPlugin(Star):
     """ComuPik插件主类
@@ -110,7 +109,7 @@ class ComuPikPlugin(Star):
 
     @filter.platform_adapter_type(filter.PlatformAdapterType.TELEGRAM)
     @filter.event_message_type(filter.EventMessageType.GROUP_MESSAGE)
-    async def on_telegram_message(self, event: TelegramMessageEvent) -> None:
+    async def on_telegram_message(self, event: TelegramPlatformEvent) -> None:
         """处理Telegram消息事件
 
         将消息转发给图片处理器处理
@@ -126,7 +125,7 @@ class ComuPikPlugin(Star):
             self._handle_error("消息处理错误", e)
 
     @filter.command("chatid")
-    async def cmd_chatid(self, event: TelegramMessageEvent) -> None:
+    async def cmd_chatid(self, event: TelegramPlatformEvent) -> None:
         """查询当前群组/频道的ID
 
         指令: /chatid
@@ -175,7 +174,7 @@ class ComuPikPlugin(Star):
             await event.send(event.plain_result(f"❌ 查询失败: {e}"))
 
     @filter.command("myid")
-    async def cmd_myid(self, event: TelegramMessageEvent) -> None:
+    async def cmd_myid(self, event: TelegramPlatformEvent) -> None:
         """查询当前用户的TG ID
 
         指令: /myid

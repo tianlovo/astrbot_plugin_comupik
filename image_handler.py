@@ -9,14 +9,14 @@ from typing import TYPE_CHECKING
 
 import aiofiles
 import imagehash
-from astrbot.core.platform.sources.telegram.telegram_message_event import (
-    TelegramMessageEvent,
-)
 from PIL import Image
 
 from astrbot.api import logger
 from astrbot.api.event import filter
 from astrbot.api.message_components import Image as ImageComponent
+from astrbot.core.platform.sources.telegram.tg_event import (
+    TelegramPlatformEvent,
+)
 from astrbot.core.utils.io import download_file
 
 from .retry_utils import RetryConfig, retry_with_backoff
@@ -64,7 +64,7 @@ class ImageHandler:
 
     @filter.platform_adapter_type(filter.PlatformAdapterType.TELEGRAM)
     @filter.event_message_type(filter.EventMessageType.GROUP_MESSAGE)
-    async def on_telegram_message(self, event: TelegramMessageEvent) -> None:
+    async def on_telegram_message(self, event: TelegramPlatformEvent) -> None:
         """处理Telegram消息事件
 
         Args:
@@ -94,7 +94,7 @@ class ImageHandler:
         except Exception as e:
             logger.error(f"[ImageHandler] 处理消息失败: {e}")
 
-    async def _process_message(self, event: TelegramMessageEvent) -> None:
+    async def _process_message(self, event: TelegramPlatformEvent) -> None:
         """处理包含图片的消息
 
         使用AstrBot Telegram适配器提供的接口下载图片
@@ -191,7 +191,7 @@ class ImageHandler:
 
     @retry_with_backoff(**RetryConfig.DOWNLOAD_RETRY)
     async def _download_image(
-        self, event: TelegramMessageEvent, photo: "PhotoSize"
+        self, event: TelegramPlatformEvent, photo: "PhotoSize"
     ) -> bytes | None:
         """从Telegram下载图片
 
