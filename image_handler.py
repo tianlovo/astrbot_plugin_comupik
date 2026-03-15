@@ -106,6 +106,22 @@ class ImageHandler:
                 logger.error("[ImageHandler] 处理器工厂未初始化")
                 return
 
+            # 获取发送者信息
+            sender_id = str(event.message_obj.sender.user_id or "")
+            sender_name = event.message_obj.sender.nickname or ""
+            timestamp = int(event.message_obj.timestamp or 0)
+
+            # 创建带有消息元数据的上下文
+            from dataclasses import replace
+
+            context_with_meta = replace(
+                self._handler_context,
+                chat_id=chat_id,
+                sender_id=sender_id,
+                sender_name=sender_name,
+                timestamp=timestamp,
+            )
+
             # 遍历消息链，对每个组件调用工厂获取单一处理器
             processed_count = 0
             for component in message_chain:
@@ -114,7 +130,7 @@ class ImageHandler:
                     logger.info(
                         f"[ImageHandler] 找到处理器 {handler.get_handler_type()}，开始处理组件"
                     )
-                    success = await handler.handle(component, self._handler_context)
+                    success = await handler.handle(component, context_with_meta)
                     if success:
                         processed_count += 1
                         logger.info("[ImageHandler] 组件处理成功")

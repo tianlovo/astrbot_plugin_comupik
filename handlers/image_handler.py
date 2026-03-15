@@ -200,10 +200,10 @@ class ImageMessageHandler(MessageHandler):
             # 保存到数据库
             record = ImageRecord(
                 message_id=str(component.id) if hasattr(component, "id") else "0",
-                chat_id="",
-                sender_id="",
-                sender_name="",
-                timestamp=0,
+                chat_id=context.chat_id,
+                sender_id=context.sender_id,
+                sender_name=context.sender_name,
+                timestamp=context.timestamp,
                 file_path=str(file_path),
                 original_url=component.url or component.file or "",
                 perceptual_hash=perceptual_hash,

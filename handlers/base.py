@@ -26,6 +26,10 @@ class HandlerContext:
         deduplication_threshold: 去重阈值（汉明距离，默认: 8）
         file_naming_pattern: 文件命名模式（默认: "{timestamp}_{msg_id}_{random}"）
         monitor_targets: 监控目标集合
+        chat_id: 聊天群ID
+        sender_id: 发送者ID
+        sender_name: 发送者名称
+        timestamp: 消息时间戳
     """
 
     db: "ComuPikDB"
@@ -39,6 +43,11 @@ class HandlerContext:
     )
     file_naming_pattern: str = "{timestamp}_{msg_id}_{random}"  # _conf_schema.json: storage.file_naming.default
     monitor_targets: set[str] | None = None
+    # 消息元数据
+    chat_id: str = ""
+    sender_id: str = ""
+    sender_name: str = ""
+    timestamp: int = 0
 
 
 class MessageHandler(ABC):
