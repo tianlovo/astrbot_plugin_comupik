@@ -8,7 +8,7 @@ import traceback
 from datetime import datetime
 
 from astrbot.api import AstrBotConfig, logger
-from astrbot.api.event import filter
+from astrbot.api.event import AstrMessageEvent, filter
 from astrbot.api.star import Context, Star, register
 from astrbot.core.platform.sources.telegram.tg_event import (
     TelegramPlatformEvent,
@@ -384,6 +384,65 @@ class ComuPikPlugin(Star):
             )
         except Exception as e:
             logger.error(f"[ComuPikPlugin] 创建错误通知任务失败: {e}")
+
+    @filter.command("comupik_stats")
+    async def stats_command(self, event: AstrMessageEvent):
+        """显示 ComuPik 图片统计信息
+
+        命令: /comupik_stats
+        显示数据库中的图片统计信息，包括总数、总大小、聊天群数量等。
+        """
+        try:
+            # 获取统计信息
+            stats = await self.db.get_statistics()
+
+            # 格式化文件大小
+            def format_size(size_bytes: int) -> str:
+                """将字节转换为可读格式"""
+                if size_bytes < 1024:
+                    return f"{size_bytes} B"
+                elif size_bytes < 1024 * 1024:
+                    return f"{size_bytes / 1024:.2f} KB"
+                elif size_bytes < 1024 * 1024 * 1024:
+                    return f"{size_bytes / (1024 * 1024):.2f} MB"
+                else:
+                    return f"{size_bytes / (1024 * 1024 * 1024):.2f} GB"
+
+            # 格式化时间戳
+            def format_timestamp(ts: int) -> str:
+                """将时间戳转换为可读格式"""
+                if ts == 0:
+                    return "无数据"
+                from datetime import datetime
+
+                return datetime.fromtimestamp(ts).strftime("%Y-%m-%d %H:%M:%S")
+
+            # 构建统计信息消息
+            stats_text = (
+                f"📊 <b>ComuPik 图片统计</b>\n"
+                f"━━━━━━━━━━━━━━━━━━\n"
+                f"📁 <b>总图片数:</b> {stats['total_count']} 张\n"
+                f"💾 <b>总大小:</b> {format_size(stats['total_size'])}\n"
+                f"📊 <b>平均大小:</b> {format_size(stats['avg_file_size'])}\n"
+                f"💬 <b>聊天群数:</b> {stats['chat_count']} 个\n"
+            )
+
+            # 添加时间信息（如果有数据）
+            if stats["total_count"] > 0:
+                stats_text += (
+                    f"━━━━━━━━━━━━━━━━━━\n"
+                    f"📅 <b>最早图片:</b> {format_timestamp(stats['oldest_image'])}\n"
+                    f"📅 <b>最新图片:</b> {format_timestamp(stats['newest_image'])}\n"
+                )
+
+            stats_text += "━━━━━━━━━━━━━━━━━━"
+
+            # 发送消息
+            yield event.plain_result(stats_text)
+
+        except Exception as e:
+            logger.error(f"[ComuPikPlugin] 获取统计信息失败: {e}")
+            yield event.plain_result("❌ 获取统计信息失败，请稍后重试")
 
     async def terminate(self) -> None:
         """插件卸载时清理资源"""

@@ -347,6 +347,77 @@ class ComuPikDB:
             logger.error(f"[ComuPikDB] 查询图片数量失败: {e}")
             return 0
 
+    async def get_statistics(self) -> dict[str, Any]:
+        """获取数据库统计信息
+
+        Returns:
+            统计信息字典，包含：
+            - total_count: 总图片数
+            - total_size: 总文件大小（字节）
+            - chat_count: 不同聊天群数量
+            - oldest_image: 最早图片时间戳
+            - newest_image: 最新图片时间戳
+            - avg_file_size: 平均文件大小
+        """
+        if not self._conn:
+            return {
+                "total_count": 0,
+                "total_size": 0,
+                "chat_count": 0,
+                "oldest_image": 0,
+                "newest_image": 0,
+                "avg_file_size": 0,
+            }
+
+        try:
+            # 总图片数
+            async with self._conn.execute(
+                "SELECT COUNT(*) FROM image_records"
+            ) as cursor:
+                total_count = (await cursor.fetchone())[0]
+
+            # 总文件大小
+            async with self._conn.execute(
+                "SELECT COALESCE(SUM(file_size), 0) FROM image_records"
+            ) as cursor:
+                total_size = (await cursor.fetchone())[0]
+
+            # 不同聊天群数量
+            async with self._conn.execute(
+                "SELECT COUNT(DISTINCT chat_id) FROM image_records"
+            ) as cursor:
+                chat_count = (await cursor.fetchone())[0]
+
+            # 最早和最新图片时间
+            async with self._conn.execute(
+                "SELECT MIN(timestamp), MAX(timestamp) FROM image_records"
+            ) as cursor:
+                row = await cursor.fetchone()
+                oldest_image = row[0] if row and row[0] else 0
+                newest_image = row[1] if row and row[1] else 0
+
+            # 平均文件大小
+            avg_file_size = total_size // total_count if total_count > 0 else 0
+
+            return {
+                "total_count": total_count,
+                "total_size": total_size,
+                "chat_count": chat_count,
+                "oldest_image": oldest_image,
+                "newest_image": newest_image,
+                "avg_file_size": avg_file_size,
+            }
+        except Exception as e:
+            logger.error(f"[ComuPikDB] 获取统计信息失败: {e}")
+            return {
+                "total_count": 0,
+                "total_size": 0,
+                "chat_count": 0,
+                "oldest_image": 0,
+                "newest_image": 0,
+                "avg_file_size": 0,
+            }
+
     async def delete_image(self, image_id: int) -> bool:
         """删除图片记录
 
