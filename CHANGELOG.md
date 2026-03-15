@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/lang/zh-CN/spec/v2.0.0.html).
 
+## [1.1.2] - 2026-03-16
+
+### Fixed
+
+- 修复 FileImageMessageHandler 同步下载警告
+  - 直接访问 `File.file` 属性会触发 AstrBot 同步下载警告
+  - 改为使用 `File.url` 创建 ImageComponent
+  - 消除"不可以在异步上下文中同步等待下载"警告
+  - 影响文件: `handlers/file_image_handler.py`
+
+- 修复重复图片检测返回值
+  - 检测到重复图片时返回 True（已处理，跳过保存）
+  - 避免误报"组件处理失败"
+  - 影响文件: `handlers/image_handler.py`
+
+- 修复 database.py 缩进问题
+  - 添加 hamming_distance 函数时破坏类结构
+  - 修复 ComuPikDB 类缺少 close 方法的问题
+  - 影响文件: `database.py`
+
+- 添加 hamming_distance 函数
+  - ImageMessageHandler 需要此函数计算哈希相似度
+  - 影响文件: `database.py`
+
 ## [1.1.1] - 2026-03-16
 
 ### Fixed
