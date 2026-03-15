@@ -70,17 +70,27 @@ class ImageHandler:
         try:
             # 检查是否为监控目标
             chat_id = str(event.message_obj.group_id or "")
+            logger.info(
+                f"[ImageHandler] 收到消息: chat_id={chat_id}, 监控目标={self.monitor_targets}"
+            )
+
             if chat_id not in self.monitor_targets:
+                logger.info(f"[ImageHandler] 聊天群 {chat_id} 不在监控目标中，跳过")
                 return
 
             # 检查消息中是否包含图片
             message_chain = event.message_obj.message
             has_image = any(isinstance(comp, ImageComponent) for comp in message_chain)
 
+            logger.info(
+                f"[ImageHandler] 消息内容: {message_chain}, 包含图片={has_image}"
+            )
+
             if not has_image:
+                logger.info("[ImageHandler] 消息不包含图片，跳过")
                 return
 
-            logger.debug(
+            logger.info(
                 f"[ImageHandler] 收到图片消息: chat_id={chat_id}, "
                 f"msg_id={event.message_obj.message_id}"
             )
