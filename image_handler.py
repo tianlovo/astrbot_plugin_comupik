@@ -129,12 +129,25 @@ class ImageHandler:
             f"[_process_message] raw_message={raw_message}, type={type(raw_message)}"
         )
 
-        if not raw_message or not hasattr(raw_message, "photo"):
-            logger.warning("[_process_message] raw_message 为空或没有 photo 属性")
+        if not raw_message:
+            logger.warning("[_process_message] raw_message 为空")
+            return
+
+        # raw_message 是 Update 对象，photo 在 Update.message 中
+        # 检查 raw_message 是否有 message 属性，以及 message 是否有 photo 属性
+        if hasattr(raw_message, "message") and raw_message.message:
+            message = raw_message.message
+            logger.info(f"[_process_message] 从 Update 中获取 message: {message}")
+        else:
+            logger.warning("[_process_message] raw_message 没有 message 属性")
+            return
+
+        if not hasattr(message, "photo"):
+            logger.warning("[_process_message] message 没有 photo 属性")
             return
 
         # 获取最大尺寸的图片
-        photos = raw_message.photo
+        photos = message.photo
         logger.info(
             f"[_process_message] photos={photos}, count={len(photos) if photos else 0}"
         )
