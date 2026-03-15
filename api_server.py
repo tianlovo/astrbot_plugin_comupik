@@ -93,15 +93,21 @@ class APIServer:
         """获取统计信息接口
 
         GET /api/stats
+        返回数据库图片统计信息，包括总数、总大小、聊天群数量等。
         """
         try:
-            total_count = await self.db.get_image_count()
+            stats = await self.db.get_statistics()
 
             return web.json_response(
                 {
                     "status": "ok",
                     "data": {
-                        "total_images": total_count,
+                        "total_images": stats["total_count"],
+                        "total_size_bytes": stats["total_size"],
+                        "avg_size_bytes": stats["avg_file_size"],
+                        "chat_count": stats["chat_count"],
+                        "oldest_timestamp": stats["oldest_image"],
+                        "newest_timestamp": stats["newest_image"],
                     },
                 }
             )
