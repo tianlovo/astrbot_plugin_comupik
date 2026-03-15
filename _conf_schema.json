@@ -1,0 +1,119 @@
+{
+  "super_admin": {
+    "description": "超级管理员TG ID",
+    "type": "string",
+    "hint": "接收错误通知的Telegram用户ID（数字格式，如: 123456789）。发送 /myid 给Bot可获取自己的ID",
+    "default": ""
+  },
+
+  "monitor_targets": {
+    "description": "监控目标列表",
+    "type": "list",
+    "hint": "需要监控的 Telegram 群组或频道 ID 列表（如: -1001234567890）",
+    "default": []
+  },
+
+  "api_server": {
+    "description": "API服务器配置",
+    "type": "object",
+    "hint": "RESTful API 服务相关配置",
+    "items": {
+      "enabled": {
+        "description": "启用API服务",
+        "type": "bool",
+        "hint": "是否启动 RESTful API 服务器",
+        "default": true
+      },
+      "host": {
+        "description": "监听地址",
+        "type": "string",
+        "hint": "API服务器监听地址，0.0.0.0 表示监听所有接口",
+        "default": "127.0.0.1"
+      },
+      "port": {
+        "description": "监听端口",
+        "type": "int",
+        "hint": "API服务器监听端口",
+        "default": 8080
+      }
+    }
+  },
+  "cleanup": {
+    "description": "定时清理配置",
+    "type": "object",
+    "hint": "临时文件自动清理相关配置",
+    "items": {
+      "enabled": {
+        "description": "启用定时清理",
+        "type": "bool",
+        "hint": "是否自动清理过期的临时文件",
+        "default": true
+      },
+      "interval_hours": {
+        "description": "清理间隔（小时）",
+        "type": "int",
+        "hint": "定时清理任务的执行间隔",
+        "slider": {
+          "min": 1,
+          "max": 72,
+          "step": 1
+        },
+        "default": 24
+      },
+      "max_age_hours": {
+        "description": "文件最大保留时间（小时）",
+        "type": "int",
+        "hint": "超过此时间的临时文件将被删除",
+        "slider": {
+          "min": 1,
+          "max": 168,
+          "step": 1
+        },
+        "default": 72
+      }
+    }
+  },
+  "deduplication": {
+    "description": "去重配置",
+    "type": "object",
+    "hint": "图片去重相关配置",
+    "items": {
+      "enabled": {
+        "description": "启用去重",
+        "type": "bool",
+        "hint": "是否使用感知哈希进行图片去重",
+        "default": true
+      },
+      "threshold": {
+        "description": "相似度阈值",
+        "type": "int",
+        "hint": "感知哈希相似度阈值，越小越严格（推荐 5-10）",
+        "slider": {
+          "min": 0,
+          "max": 20,
+          "step": 1
+        },
+        "default": 8
+      }
+    }
+  },
+  "storage": {
+    "description": "存储配置",
+    "type": "object",
+    "hint": "文件存储相关配置",
+    "items": {
+      "tmp_subdir": {
+        "description": "临时文件子目录名",
+        "type": "string",
+        "hint": "存放下载图片的临时子目录名称",
+        "default": "tmp"
+      },
+      "file_naming": {
+        "description": "文件命名模式",
+        "type": "string",
+        "hint": "下载图片的命名模式，支持 {msg_id}, {timestamp}, {chat_id}, {random} 变量",
+        "default": "{timestamp}_{msg_id}_{random}"
+      }
+    }
+  }
+}
