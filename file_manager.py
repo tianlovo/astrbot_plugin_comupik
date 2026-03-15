@@ -270,6 +270,7 @@ class FileManager:
 
     async def _cleanup_loop(self) -> None:
         """定时清理循环"""
+        # 默认值与 _conf_schema.json: cleanup.interval_hours.default 保持一致
         interval_hours = self.cleanup_config.get("interval_hours", 24)
         interval_seconds = interval_hours * 3600
 
@@ -284,6 +285,7 @@ class FileManager:
 
     async def _do_cleanup(self) -> None:
         """执行清理任务"""
+        # 默认值与 _conf_schema.json: cleanup.max_age_hours.default 保持一致
         max_age_hours = self.cleanup_config.get("max_age_hours", 72)
         max_age = timedelta(hours=max_age_hours)
         now = datetime.now()

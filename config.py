@@ -65,62 +65,70 @@ class ComuPikConfig:
     def api_enabled(self) -> bool:
         """API服务是否启用"""
         api_config = self.get("api_server", {})
+        # 默认值与 _conf_schema.json: api_server.enabled.default 保持一致
         return api_config.get("enabled", True)
 
     @property
     def api_host(self) -> str:
         """获取API服务器监听地址"""
         api_config = self.get("api_server", {})
+        # 默认值与 _conf_schema.json: api_server.host.default 保持一致
         return api_config.get("host", "127.0.0.1")
 
     @property
     def api_port(self) -> int:
         """获取API服务器监听端口"""
         api_config = self.get("api_server", {})
+        # 默认值与 _conf_schema.json: api_server.port.default 保持一致
         return api_config.get("port", 8080)
 
     @property
     def cleanup_config(self) -> dict:
         """获取清理配置"""
+        # 默认值与 _conf_schema.json: cleanup.*.default 保持一致
         return self.get(
             "cleanup",
             {
-                "enabled": True,
-                "interval_hours": 24,
-                "max_age_hours": 72,
+                "enabled": True,  # _conf_schema.json: cleanup.enabled.default
+                "interval_hours": 24,  # _conf_schema.json: cleanup.interval_hours.default
+                "max_age_hours": 72,  # _conf_schema.json: cleanup.max_age_hours.default
             },
         )
 
     @property
     def deduplication_config(self) -> dict:
         """获取去重配置"""
+        # 默认值与 _conf_schema.json: deduplication.*.default 保持一致
         return self.get(
             "deduplication",
             {
-                "enabled": True,
-                "threshold": 8,
+                "enabled": True,  # _conf_schema.json: deduplication.enabled.default
+                "threshold": 8,  # _conf_schema.json: deduplication.threshold.default
             },
         )
 
     @property
     def storage_config(self) -> dict:
         """获取存储配置"""
+        # 默认值与 _conf_schema.json: storage.*.default 保持一致
         return self.get(
             "storage",
             {
-                "tmp_subdir": "tmp",
-                "file_naming": "{timestamp}_{msg_id}_{random}",
+                "tmp_subdir": "tmp",  # _conf_schema.json: storage.tmp_subdir.default
+                "file_naming": "{timestamp}_{msg_id}_{random}",  # _conf_schema.json: storage.file_naming.default
             },
         )
 
     @property
     def tmp_subdir(self) -> str:
         """获取临时文件子目录名"""
+        # 默认值与 _conf_schema.json: storage.tmp_subdir.default 保持一致
         return self.storage_config.get("tmp_subdir", "tmp")
 
     @property
     def file_naming_pattern(self) -> str:
         """获取文件命名模式"""
+        # 默认值与 _conf_schema.json: storage.file_naming.default 保持一致
         return self.storage_config.get("file_naming", "{timestamp}_{msg_id}_{random}")
 
     def validate(self) -> tuple[bool, str]:

@@ -43,10 +43,16 @@ class ImageHandler:
             file_manager: 文件管理器对象
         """
         self.monitor_targets = set(monitor_targets)
-        self.deduplication_enabled = deduplication_config.get("enabled", True)
-        self.deduplication_threshold = deduplication_config.get("threshold", 8)
+        # 默认值与 _conf_schema.json 中的默认值保持一致
+        self.deduplication_enabled = deduplication_config.get(
+            "enabled", True
+        )  # _conf_schema.json: deduplication.enabled.default
+        self.deduplication_threshold = deduplication_config.get(
+            "threshold", 8
+        )  # _conf_schema.json: deduplication.threshold.default
         self.file_naming_pattern = storage_config.get(
-            "file_naming", "{timestamp}_{msg_id}_{random}"
+            "file_naming",
+            "{timestamp}_{msg_id}_{random}",  # _conf_schema.json: storage.file_naming.default
         )
         self.db = db
         self.file_manager = file_manager

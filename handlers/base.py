@@ -17,21 +17,27 @@ class HandlerContext:
     """处理器上下文
 
     传递处理器所需的依赖和配置。
+    默认值应与 _conf_schema.json 中的默认值保持一致。
 
     Attributes:
         db: 数据库对象
         file_manager: 文件管理器对象
-        deduplication_enabled: 是否启用去重
-        deduplication_threshold: 去重阈值（汉明距离）
-        file_naming_pattern: 文件命名模式
+        deduplication_enabled: 是否启用去重（默认: True）
+        deduplication_threshold: 去重阈值（汉明距离，默认: 8）
+        file_naming_pattern: 文件命名模式（默认: "{timestamp}_{msg_id}_{random}"）
         monitor_targets: 监控目标集合
     """
 
     db: "ComuPikDB"
     file_manager: "FileManager"
-    deduplication_enabled: bool = True
-    deduplication_threshold: int = 8
-    file_naming_pattern: str = "{timestamp}_{msg_id}_{random}"
+    # 注意：默认值应与 _conf_schema.json 中的默认值保持一致
+    deduplication_enabled: bool = (
+        True  # _conf_schema.json: deduplication.enabled.default
+    )
+    deduplication_threshold: int = (
+        8  # _conf_schema.json: deduplication.threshold.default
+    )
+    file_naming_pattern: str = "{timestamp}_{msg_id}_{random}"  # _conf_schema.json: storage.file_naming.default
     monitor_targets: set[str] | None = None
 
 
