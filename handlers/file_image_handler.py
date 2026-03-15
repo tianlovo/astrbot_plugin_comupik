@@ -78,8 +78,10 @@ class FileImageMessageHandler(MessageHandler):
             # 将 File 组件转换为 Image 组件
             from astrbot.api.message_components import Image as ImageComponent
 
+            # 使用 URL 而不是直接访问 file 属性，避免同步下载警告
+            # 参考: AstrBot 警告 "不可以在异步上下文中同步等待下载"
             image_component = ImageComponent(
-                file=component.file,
+                file=component.url,  # 使用 URL 作为 file 参数
                 url=component.url,
             )
             # 复制其他属性
