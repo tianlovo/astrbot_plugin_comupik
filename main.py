@@ -25,7 +25,7 @@ from .image_handler import ImageHandler
     "astrbot_plugin_comupik",
     "ComuPik",
     "Telegram群组/频道图片自动收集、存储管理及API服务插件",
-    "1.0.3",
+    "1.0.4",
 )
 class ComuPikPlugin(Star):
     """ComuPik插件主类
@@ -98,8 +98,8 @@ class ComuPikPlugin(Star):
 
             # 发送初始化成功通知给超级管理员
             if self.cfg.super_admin:
-                await self._send_error_notification(
-                    "插件初始化", "ComuPik插件已成功初始化并开始运行", ""
+                await self._send_notification(
+                    "ComuPik插件初始化成功", "插件已成功初始化并开始运行", "✅"
                 )
 
         except Exception as e:
@@ -224,6 +224,57 @@ class ComuPikPlugin(Star):
             logger.error(f"[ComuPikPlugin] 处理用户ID查询失败: {e}")
             self._handle_error("用户ID查询错误", e)
             await event.send(event.plain_result(f"❌ 查询失败: {e}"))
+
+    async def _send_notification(
+        self, title: str, message: str, icon: str = "ℹ️"
+    ) -> None:
+        """向超级管理员发送普通通知
+
+        Args:
+            title: 通知标题
+            message: 通知内容
+            icon: 通知图标
+        """
+        if not self.cfg.super_admin:
+            return
+
+        try:
+            # 构建通知消息
+            current_time_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+            notification_text = (
+                f"{icon} <b>{title}</b>\n"
+                f"━━━━━━━━━━━━━━━━━━\n"
+                f"<b>时间:</b> {current_time_str}\n"
+                f"<b>信息:</b>\n"
+                f"<pre>{message[:500]}</pre>\n"
+                f"━━━━━━━━━━━━━━━━━━\n"
+            )
+
+            # 发送消息给超级管理员
+            from astrbot.core.platform.sources.telegram.tg_adapter import (
+                TelegramPlatformAdapter,
+            )
+
+            # 获取Telegram适配器
+            tg_adapter = None
+            for adapter in self.context.platform_manager.platform_insts:
+                if isinstance(adapter, TelegramPlatformAdapter):
+                    tg_adapter = adapter
+                    break
+
+            if tg_adapter and tg_adapter.client:
+                await tg_adapter.client.send_message(
+                    chat_id=self.cfg.super_admin,
+                    text=notification_text,
+                    parse_mode="HTML",
+                )
+                logger.info(
+                    f"[ComuPikPlugin] 通知已发送给超级管理员: {self.cfg.super_admin}"
+                )
+
+        except Exception as e:
+            logger.error(f"[ComuPikPlugin] 发送通知失败: {e}")
 
     async def _send_error_notification(
         self, error_type: str, error_msg: str, stack_trace: str = ""
