@@ -195,6 +195,24 @@ class ComuPikDB:
 
         return sum(c1 != c2 for c1, c2 in zip(hash1, hash2))
 
+
+def hamming_distance(hash1: str, hash2: str) -> int:
+    """计算两个感知哈希的汉明距离
+
+    公共函数，供外部模块使用。
+
+    Args:
+        hash1: 哈希值1
+        hash2: 哈希值2
+
+    Returns:
+        汉明距离，长度不同时返回无穷大
+    """
+    if len(hash1) != len(hash2):
+        return float("inf")  # type: ignore
+
+    return sum(c1 != c2 for c1, c2 in zip(hash1, hash2))
+
     async def get_image_by_id(self, image_id: int) -> ImageRecord | None:
         """根据ID获取图片记录
 
