@@ -115,5 +115,47 @@
         "default": "{timestamp}_{msg_id}_{random}"
       }
     }
+  },
+  "nsfw": {
+    "description": "NSFW内容审核配置",
+    "type": "object",
+    "hint": "图片内容安全检测相关配置，参考: https://github.com/helloxz/nsfw",
+    "items": {
+      "enabled": {
+        "description": "启用NSFW检测",
+        "type": "bool",
+        "hint": "是否启用NSFW内容审核，启用后会检测图片内容并决定是否保存",
+        "default": false
+      },
+      "api_url": {
+        "description": "NSFW检测服务地址",
+        "type": "string",
+        "hint": "外部NSFW检测服务地址，如: http://127.0.0.1:6086",
+        "default": "http://127.0.0.1:6086"
+      },
+      "token": {
+        "description": "访问令牌",
+        "type": "string",
+        "hint": "NSFW检测服务的访问Token（如启用鉴权则必填）",
+        "default": ""
+      },
+      "threshold": {
+        "description": "NSFW判定阈值",
+        "type": "float",
+        "hint": "NSFW风险系数阈值，超过此值判定为NSFW内容（范围0.0-1.0）",
+        "slider": {
+          "min": 0.0,
+          "max": 1.0,
+          "step": 0.05
+        },
+        "default": 0.8
+      },
+      "allow_save": {
+        "description": "允许保存NSFW内容",
+        "type": "bool",
+        "hint": "是否允许保存被判定为NSFW的图片，关闭则会立即删除",
+        "default": false
+      }
+    }
   }
 }

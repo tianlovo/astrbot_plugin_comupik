@@ -155,6 +155,35 @@ class ImageMessageHandler(MessageHandler):
             width, height = image.size
             file_size = len(image_data)
 
+            # NSFW 内容检测（下载完成后、去重检查前）
+            if context.nsfw_enabled and context.nsfw_checker:
+                nsfw_result = await context.nsfw_checker.check_image(
+                    image_data,
+                    filename=f"image_{component.id or 'unknown'}.jpg",
+                )
+
+                if nsfw_result is None:
+                    # 检测失败，记录警告但继续处理（降级策略：避免漏存）
+                    logger.warning("[ImageMessageHandler] NSFW检测失败，继续保存图片")
+                elif nsfw_result.is_nsfw:
+                    # 检测到 NSFW 内容
+                    logger.warning(
+                        f"[ImageMessageHandler] 检测到NSFW内容: "
+                        f"nsfw={nsfw_result.nsfw:.4f}, "
+                        f"threshold={context.nsfw_threshold}"
+                    )
+
+                    if not context.nsfw_allow_save:
+                        # 不允许保存 NSFW，立即删除
+                        logger.info(
+                            "[ImageMessageHandler] 配置不允许保存NSFW，跳过保存"
+                        )
+                        # 返回 True 表示已"处理"（只是未保存）
+                        return True
+                    else:
+                        # 允许保存 NSFW，记录日志后继续
+                        logger.info("[ImageMessageHandler] 配置允许保存NSFW，继续保存")
+
             # 计算感知哈希
             perceptual_hash = ""
             if context.deduplication_enabled:

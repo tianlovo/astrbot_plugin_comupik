@@ -83,6 +83,7 @@ class ComuPikPlugin(Star):
                 self.cfg.storage_config,
                 self.db,
                 self.file_manager,
+                self.cfg.nsfw_config,
             )
             await self.image_handler.init()
 

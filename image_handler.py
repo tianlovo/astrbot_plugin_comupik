@@ -32,6 +32,7 @@ class ImageHandler:
         storage_config: dict,
         db: "ComuPikDB",
         file_manager: "FileManager",
+        nsfw_config: dict | None = None,
     ):
         """初始化图片处理器
 
@@ -41,6 +42,7 @@ class ImageHandler:
             storage_config: 存储配置
             db: 数据库对象
             file_manager: 文件管理器对象
+            nsfw_config: NSFW审核配置（可选）
         """
         self.monitor_targets = set(monitor_targets)
         # 默认值与 _conf_schema.json 中的默认值保持一致
@@ -57,6 +59,31 @@ class ImageHandler:
         self.db = db
         self.file_manager = file_manager
 
+        # NSFW 配置
+        self.nsfw_config = nsfw_config or {}
+        self.nsfw_enabled = self.nsfw_config.get(
+            "enabled", False
+        )  # _conf_schema.json: nsfw.enabled.default
+        self.nsfw_checker = None
+        self.nsfw_threshold = self.nsfw_config.get(
+            "threshold", 0.8
+        )  # _conf_schema.json: nsfw.threshold.default
+        self.nsfw_allow_save = self.nsfw_config.get(
+            "allow_save", False
+        )  # _conf_schema.json: nsfw.allow_save.default
+
+        # 如果启用NSFW检测，初始化检测器
+        if self.nsfw_enabled:
+            from .nsfw_checker import NSFWChecker
+
+            self.nsfw_checker = NSFWChecker(
+                api_url=self.nsfw_config.get("api_url", "http://127.0.0.1:6086"),
+                token=self.nsfw_config.get("token", ""),
+            )
+            logger.info(
+                f"[ImageHandler] NSFW检测已启用，服务地址: {self.nsfw_checker.api_url}"
+            )
+
         # 创建处理器上下文
         self._handler_context = HandlerContext(
             db=self.db,
@@ -65,6 +92,10 @@ class ImageHandler:
             deduplication_threshold=self.deduplication_threshold,
             file_naming_pattern=self.file_naming_pattern,
             monitor_targets=self.monitor_targets,
+            nsfw_enabled=self.nsfw_enabled,
+            nsfw_checker=self.nsfw_checker,
+            nsfw_threshold=self.nsfw_threshold,
+            nsfw_allow_save=self.nsfw_allow_save,
         )
 
         # 处理器工厂（在init中初始化）
