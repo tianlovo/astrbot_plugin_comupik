@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/lang/zh-CN/spec/v2.0.0.html).
 
+## [1.1.1] - 2026-03-16
+
+### Fixed
+
+- 修复 save_image 方法名错误
+  - ImageMessageHandler 中错误调用了 save_image()
+  - FileManager 实际方法名为 save_file()
+  - 修复后图片可以正常保存
+  - 影响文件: `handlers/image_handler.py`
+
 ## [1.1.0] - 2026-03-16
 
 ### Changed
