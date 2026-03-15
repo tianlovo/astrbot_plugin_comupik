@@ -222,7 +222,7 @@ class ComuPikClient:
         Args:
             start_time: 开始时间戳
             end_time: 结束时间戳
-            exclude_ids: 要排除的图片ID列表
+            exclude_ids: 要排除的图片ID列表，用于轮询时避免重复获取已处理的图片
             limit: 返回数量限制
             offset: 偏移量
 
@@ -231,6 +231,12 @@ class ComuPikClient:
 
         Raises:
             APIError: API 调用失败
+
+        Note:
+            exclude_ids 的必要性：
+            由于时间戳是秒级的，同一秒内发送的多张图片会有相同的 timestamp。
+            在轮询场景中，如果不排除已处理的图片ID，可能会重复获取相同的图片。
+            建议客户端维护一个已处理ID的集合，每次查询时传入 exclude_ids。
         """
         params = {
             "start_time": start_time,

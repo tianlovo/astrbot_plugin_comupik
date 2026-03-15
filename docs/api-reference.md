@@ -89,6 +89,35 @@ GET /api/images?start_time={start_time}&end_time={end_time}&exclude_ids={exclude
 | limit | int | 否 | 100 | 返回数量限制（最大1000） |
 | offset | int | 否 | 0 | 偏移量 |
 
+**关于 `exclude_ids` 参数：**
+
+`exclude_ids` 用于在轮询新图片时排除已处理的图片ID，避免重复获取相同数据。
+
+**为什么需要 `exclude_ids`？**
+
+在轮询场景中，客户端需要定期获取新图片。由于时间范围查询是基于 `timestamp` 字段，而多张图片可能具有相同的时间戳（同一秒内），这会导致以下问题：
+
+1. **时间戳精度限制**：时间戳是秒级的，同一秒内发送的多张图片会有相同的 `timestamp`
+2. **分页边界问题**：当使用 `limit` 和 `offset` 分页时，新图片的插入可能导致偏移量计算错误
+3. **重复数据**：如果不排除已处理的图片ID，轮询时可能会重复获取相同的图片
+
+**使用场景：**
+
+```
+第一次请求：
+GET /api/images?start_time=0&end_time=1700000000&exclude_ids=[]
+返回：[图片1(id=1), 图片2(id=2), 图片3(id=3)]
+
+第二次请求（排除已获取的图片）：
+GET /api/images?start_time=1700000000&end_time=1700000100&exclude_ids=[1,2,3]
+返回：[图片4(id=4), 图片5(id=5)]  # 不会重复返回图片1-3
+```
+
+**最佳实践：**
+- 客户端应维护一个已处理图片ID的集合
+- 每次轮询时将已知的ID列表传入 `exclude_ids`
+- 收到响应后，将新图片的ID加入已处理集合
+
 **响应示例：**
 
 ```json

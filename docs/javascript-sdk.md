@@ -64,6 +64,13 @@ export interface StatsInfo {
 export interface ListImagesOptions {
   startTime: number;
   endTime: number;
+  /**
+   * 要排除的图片ID列表，用于轮询时避免重复获取已处理的图片
+   * 
+   * 由于时间戳是秒级的，同一秒内发送的多张图片会有相同的 timestamp。
+   * 在轮询场景中，如果不排除已处理的图片ID，可能会重复获取相同的图片。
+   * 建议客户端维护一个已处理ID的集合，每次查询时传入 excludeIds。
+   */
   excludeIds?: number[];
   limit?: number;
   offset?: number;
