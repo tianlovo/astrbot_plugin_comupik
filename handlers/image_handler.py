@@ -187,9 +187,14 @@ class ImageMessageHandler(MessageHandler):
                     return True
 
             # 生成文件名
+            # 使用组件ID + 随机后缀确保唯一性，支持同消息多张图片
+            import uuid
+
+            unique_suffix = uuid.uuid4().hex[:8]
+            msg_id = str(component.id) if hasattr(component, "id") else "0"
             filename = context.file_manager.generate_filename(
                 pattern=context.file_naming_pattern,
-                msg_id=str(component.id) if hasattr(component, "id") else "0",
+                msg_id=f"{msg_id}_{unique_suffix}",
                 ext=".jpg",
             )
 

@@ -69,6 +69,7 @@ class ComuPikDB:
             self._conn.row_factory = aiosqlite.Row
 
             # 创建图片记录表
+            # 注意：移除了 UNIQUE(message_id, chat_id) 约束，以支持同消息多张图片
             await self._conn.execute("""
                 CREATE TABLE IF NOT EXISTS image_records (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -77,14 +78,13 @@ class ComuPikDB:
                     sender_id TEXT NOT NULL,
                     sender_name TEXT DEFAULT '',
                     timestamp INTEGER NOT NULL,
-                    file_path TEXT NOT NULL,
+                    file_path TEXT NOT NULL UNIQUE,
                     original_url TEXT DEFAULT '',
                     perceptual_hash TEXT DEFAULT '',
                     file_size INTEGER DEFAULT 0,
                     width INTEGER DEFAULT 0,
                     height INTEGER DEFAULT 0,
-                    created_at INTEGER NOT NULL,
-                    UNIQUE(message_id, chat_id)
+                    created_at INTEGER NOT NULL
                 )
             """)
 
