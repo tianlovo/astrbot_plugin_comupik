@@ -187,15 +187,32 @@ class ImageHandler:
         perceptual_hash = ""
         if self.deduplication_enabled:
             perceptual_hash = await self._calculate_perceptual_hash(image_data)
+            logger.info(f"[_process_message] 计算感知哈希: {perceptual_hash}")
 
             # 检查是否重复
             existing = await self.db.get_image_by_hash(
                 perceptual_hash, self.deduplication_threshold
             )
             if existing:
-                logger.info(
-                    f"[ImageHandler] 发现重复图片，跳过存储: {existing.file_path}"
+                # 计算实际匹配度（汉明距离）
+                from .database import hamming_distance
+
+                distance = hamming_distance(perceptual_hash, existing.perceptual_hash)
+                similarity = max(0, 100 - distance * 10)  # 估算相似度百分比
+
+                logger.warning(
+                    f"[ImageHandler] 发现重复图片，跳过存储:\n"
+                    f"  - 当前图片哈希: {perceptual_hash}\n"
+                    f"  - 已有图片哈希: {existing.perceptual_hash}\n"
+                    f"  - 汉明距离: {distance} (阈值: {self.deduplication_threshold})\n"
+                    f"  - 估算相似度: {similarity}%\n"
+                    f"  - 已有图片ID: {existing.id}\n"
+                    f"  - 已有图片路径: {existing.file_path}\n"
+                    f"  - 当前图片已删除"
                 )
+
+                # 删除当前重复图片（从内存中释放，因为已经下载了）
+                del image_data
                 return
 
         # 生成文件名并保存，使用配置的命名模式
