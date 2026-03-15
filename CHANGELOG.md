@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/lang/zh-CN/spec/v2.0.0.html).
 
+## [1.1.3] - 2026-03-16
+
+### Fixed
+
+- 修复同消息多张图片存储问题
+  - 问题：同一条消息包含多张图片时，只有第一张被存储
+  - 原因：数据库 `UNIQUE(message_id, chat_id)` 约束导致冲突
+  - 解决：移除该约束，改为 `UNIQUE(file_path)`
+  - 文件名添加 UUID 后缀确保唯一性
+  - 影响文件: `database.py`, `handlers/image_handler.py`
+
+- 修复数据库统计信息不更新问题
+  - 添加消息元数据（chat_id, sender_id, sender_name, timestamp）到 HandlerContext
+  - 确保数据库记录包含完整信息
+  - 影响文件: `handlers/base.py`, `image_handler.py`, `handlers/image_handler.py`
+
+### Added
+
+- 添加图片统计指令 `/comupik_stats`
+  - 显示总图片数、总大小、聊天群数量等统计信息
+  - 支持格式化输出（文件大小自动转换、时间戳格式化）
+  - 影响文件: `main.py`, `database.py`
+
+- 更新 API 统计接口
+  - 新增字段：total_size_bytes, avg_size_bytes, chat_count, oldest_timestamp, newest_timestamp
+  - 影响文件: `api_server.py`
+
 ## [1.1.2] - 2026-03-16
 
 ### Fixed
