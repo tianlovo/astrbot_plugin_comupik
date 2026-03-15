@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/lang/zh-CN/spec/v2.0.0.html).
 
+## [1.0.8] - 2026-03-16
+
+### Added
+
+- 支持识别以文件形式发送的图片
+  - 新增 `_check_has_image` 方法，同时检查 `Image` 和 `File` 组件
+  - 对于 `File` 组件，通过文件扩展名判断是否为图片文件
+  - 支持常见图片格式：jpg, jpeg, png, gif, webp, bmp, tiff
+  - 扩展名不区分大小写（.JPG 和 .jpg 都支持）
+  - 影响文件: `image_handler.py`
+
 ## [1.0.7] - 2026-03-16
 
 ### Fixed
