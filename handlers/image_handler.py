@@ -193,7 +193,7 @@ class ImageMessageHandler(MessageHandler):
             )
 
             # 保存文件
-            file_path = await context.file_manager.save_image(image_data, filename)
+            file_path = await context.file_manager.save_file(image_data, filename)
             logger.info(f"[ImageMessageHandler] 文件已保存: {file_path}")
 
             # 保存到数据库
