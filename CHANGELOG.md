@@ -5,7 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/lang/zh-CN/spec/v2.0.0.html).
 
-## [1.1.4] - 2026-03-16
+## [1.2.0] - 2026-03-16
+
+### Added
+
+- 增加 NSFW 内容审核功能
+  - 支持调用外部 NSFW 检测服务（参考: https://github.com/helloxz/nsfw）
+  - 新增配置项：启用开关、服务地址、Token、阈值、是否允许保存
+  - 检测到 NSFW 且不允许保存时，立即删除图片
+  - 检测失败时降级处理（继续保存，避免漏存）
+  - 影响文件: `nsfw_checker.py`, `_conf_schema.json`, `handlers/base.py`, `telegram_image_handler.py`, `config.py`, `handlers/image_component_handler.py`
 
 ### Changed
 
