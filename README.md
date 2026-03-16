@@ -75,8 +75,13 @@ Telegram群组/频道图片自动收集、存储管理及API服务插件
 | `nsfw.token` | string | 访问令牌（可选） | "" |
 | `nsfw.threshold` | float | NSFW判定阈值（0.0-1.0） | 0.8 |
 | `nsfw.allow_save` | bool | 是否允许保存NSFW内容 | false |
+| `nsfw.fail_open` | bool | 检测失败时允许保存（降级策略） | true |
 
 > **NSFW检测服务部署**: 参考 https://github.com/helloxz/nsfw
+>
+> **降级策略说明**: `fail_open` 控制检测失败时的处理方式
+> - `true`（默认）：检测失败时允许保存，避免漏存正常图片
+> - `false`：检测失败时拒绝保存，更严格的安全策略
 
 ## 使用指南
 
