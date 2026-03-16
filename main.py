@@ -18,14 +18,14 @@ from .api_server import APIServer
 from .config import ComuPikConfig
 from .database import ComuPikDB
 from .file_manager import FileManager
-from .image_handler import ImageHandler
+from .telegram_image_handler import ImageHandler
 
 
 @register(
     "astrbot_plugin_comupik",
     "ComuPik",
     "Telegram群组/频道图片自动收集、存储管理及API服务插件",
-    "1.1.3",
+    "1.1.4",
 )
 class ComuPikPlugin(Star):
     """ComuPik插件主类

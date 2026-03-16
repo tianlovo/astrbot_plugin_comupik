@@ -10,7 +10,7 @@ from astrbot.api import logger
 from astrbot.api.message_components import File as FileComponent
 
 from .base import HandlerContext, MessageHandler
-from .image_handler import ImageMessageHandler
+from .image_component_handler import ImageComponentHandler
 
 
 class FileImageMessageHandler(MessageHandler):
@@ -35,7 +35,7 @@ class FileImageMessageHandler(MessageHandler):
 
     def __init__(self):
         """初始化文件图片处理器"""
-        self._image_handler = ImageMessageHandler()
+        self._image_handler = ImageComponentHandler()
 
     def can_handle(self, component: Any) -> bool:
         """检查是否能处理该组件

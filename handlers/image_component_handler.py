@@ -1,4 +1,4 @@
-"""图片消息处理器
+"""图片组件处理器
 
 处理直接发送的图片消息（Image组件）。
 """
@@ -21,8 +21,8 @@ if TYPE_CHECKING:
     pass
 
 
-class ImageMessageHandler(MessageHandler):
-    """图片消息处理器
+class ImageComponentHandler(MessageHandler):
+    """图片组件处理器
 
     处理直接发送的图片消息（Image组件）。
     一对一关系：只处理 Image 类型组件。
@@ -65,18 +65,18 @@ class ImageMessageHandler(MessageHandler):
             处理是否成功
         """
         try:
-            logger.info(f"[ImageMessageHandler] 开始处理图片: {component}")
+            logger.info(f"[ImageComponentHandler] 开始处理图片: {component}")
 
             # 获取图片URL
             image_url = component.url or component.file
             if not image_url:
-                logger.error("[ImageMessageHandler] 图片URL为空")
+                logger.error("[ImageComponentHandler] 图片URL为空")
                 return False
 
             # 下载图片
             image_data = await self._download_image(image_url, context)
             if not image_data:
-                logger.error("[ImageMessageHandler] 下载图片失败")
+                logger.error("[ImageComponentHandler] 下载图片失败")
                 return False
 
             # 处理图片（保存、计算哈希等）
@@ -84,7 +84,7 @@ class ImageMessageHandler(MessageHandler):
             return success
 
         except Exception as e:
-            logger.error(f"[ImageMessageHandler] 处理图片失败: {e}")
+            logger.error(f"[ImageComponentHandler] 处理图片失败: {e}")
             return False
 
     @retry_with_backoff(**RetryConfig.DOWNLOAD_RETRY)
@@ -107,14 +107,14 @@ class ImageMessageHandler(MessageHandler):
             temp_filename = f"download_{uuid.uuid4().hex}.jpg"
             temp_path = str(context.file_manager.tmp_dir / temp_filename)
 
-            logger.info(f"[ImageMessageHandler] 开始下载到: {temp_path}")
+            logger.info(f"[ImageComponentHandler] 开始下载到: {temp_path}")
 
             # 下载文件
             await download_file(image_url, temp_path)
 
             # 检查文件是否存在
             if not Path(temp_path).exists():
-                logger.error("[ImageMessageHandler] 下载失败: 文件不存在")
+                logger.error("[ImageComponentHandler] 下载失败: 文件不存在")
                 return None
 
             # 读取文件内容
@@ -125,13 +125,13 @@ class ImageMessageHandler(MessageHandler):
             try:
                 Path(temp_path).unlink()
             except Exception as e:
-                logger.warning(f"[ImageMessageHandler] 清理临时文件失败: {e}")
+                logger.warning(f"[ImageComponentHandler] 清理临时文件失败: {e}")
 
-            logger.info(f"[ImageMessageHandler] 下载完成: {len(image_data)} bytes")
+            logger.info(f"[ImageComponentHandler] 下载完成: {len(image_data)} bytes")
             return image_data
 
         except Exception as e:
-            logger.error(f"[ImageMessageHandler] 下载图片失败: {e}")
+            logger.error(f"[ImageComponentHandler] 下载图片失败: {e}")
             return None
 
     async def _process_image_data(
@@ -164,11 +164,11 @@ class ImageMessageHandler(MessageHandler):
 
                 if nsfw_result is None:
                     # 检测失败，记录警告但继续处理（降级策略：避免漏存）
-                    logger.warning("[ImageMessageHandler] NSFW检测失败，继续保存图片")
+                    logger.warning("[ImageComponentHandler] NSFW检测失败，继续保存图片")
                 elif nsfw_result.is_nsfw:
                     # 检测到 NSFW 内容
                     logger.warning(
-                        f"[ImageMessageHandler] 检测到NSFW内容: "
+                        f"[ImageComponentHandler] 检测到NSFW内容: "
                         f"nsfw={nsfw_result.nsfw:.4f}, "
                         f"threshold={context.nsfw_threshold}"
                     )
@@ -176,19 +176,21 @@ class ImageMessageHandler(MessageHandler):
                     if not context.nsfw_allow_save:
                         # 不允许保存 NSFW，立即删除
                         logger.info(
-                            "[ImageMessageHandler] 配置不允许保存NSFW，跳过保存"
+                            "[ImageComponentHandler] 配置不允许保存NSFW，跳过保存"
                         )
                         # 返回 True 表示已"处理"（只是未保存）
                         return True
                     else:
                         # 允许保存 NSFW，记录日志后继续
-                        logger.info("[ImageMessageHandler] 配置允许保存NSFW，继续保存")
+                        logger.info(
+                            "[ImageComponentHandler] 配置允许保存NSFW，继续保存"
+                        )
 
             # 计算感知哈希
             perceptual_hash = ""
             if context.deduplication_enabled:
                 perceptual_hash = self._calculate_perceptual_hash(image)
-                logger.info(f"[ImageMessageHandler] 感知哈希: {perceptual_hash}")
+                logger.info(f"[ImageComponentHandler] 感知哈希: {perceptual_hash}")
 
                 # 检查是否重复
                 from ..database import ImageRecord
@@ -206,7 +208,7 @@ class ImageMessageHandler(MessageHandler):
                     similarity = max(0, 100 - distance * 10)
 
                     logger.warning(
-                        f"[ImageMessageHandler] 发现重复图片，跳过保存:\n"
+                        f"[ImageComponentHandler] 发现重复图片，跳过保存:\n"
                         f"  - 当前哈希: {perceptual_hash}\n"
                         f"  - 已有哈希: {existing.perceptual_hash}\n"
                         f"  - 汉明距离: {distance}\n"
@@ -229,7 +231,7 @@ class ImageMessageHandler(MessageHandler):
 
             # 保存文件
             file_path = await context.file_manager.save_file(image_data, filename)
-            logger.info(f"[ImageMessageHandler] 文件已保存: {file_path}")
+            logger.info(f"[ImageComponentHandler] 文件已保存: {file_path}")
 
             # 保存到数据库
             record = ImageRecord(
@@ -248,14 +250,16 @@ class ImageMessageHandler(MessageHandler):
 
             success, record_id = await context.db.add_image(record)
             if success:
-                logger.info(f"[ImageMessageHandler] 图片已保存到数据库: id={record_id}")
+                logger.info(
+                    f"[ImageComponentHandler] 图片已保存到数据库: id={record_id}"
+                )
                 return True
             else:
-                logger.error("[ImageMessageHandler] 保存到数据库失败")
+                logger.error("[ImageComponentHandler] 保存到数据库失败")
                 return False
 
         except Exception as e:
-            logger.error(f"[ImageMessageHandler] 处理图片数据失败: {e}")
+            logger.error(f"[ImageComponentHandler] 处理图片数据失败: {e}")
             return False
 
     def _calculate_perceptual_hash(self, image: Image.Image) -> str:
@@ -274,5 +278,5 @@ class ImageMessageHandler(MessageHandler):
             hash_value = imagehash.average_hash(image)
             return str(hash_value)
         except Exception as e:
-            logger.error(f"[ImageMessageHandler] 计算感知哈希失败: {e}")
+            logger.error(f"[ImageComponentHandler] 计算感知哈希失败: {e}")
             return ""

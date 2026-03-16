@@ -15,7 +15,7 @@ from astrbot.api import logger
 if TYPE_CHECKING:
     from .database import ComuPikDB
     from .file_manager import FileManager
-    from .image_handler import ImageHandler
+    from .telegram_image_handler import ImageHandler
 
 
 class APIServer:

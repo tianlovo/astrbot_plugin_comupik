@@ -37,9 +37,9 @@ class MessageHandlerFactory:
         """
         # 这里需要根据 handler 类型推断能处理的组件类型
         from .file_image_handler import FileImageMessageHandler
-        from .image_handler import ImageMessageHandler
+        from .image_component_handler import ImageComponentHandler
 
-        if isinstance(handler, ImageMessageHandler):
+        if isinstance(handler, ImageComponentHandler):
             self._handlers[ImageComponent] = handler
             logger.info(
                 f"[MessageHandlerFactory] 注册处理器: {handler.get_handler_type()} -> ImageComponent"
@@ -102,10 +102,10 @@ class MessageHandlerFactory:
             return
 
         from .file_image_handler import FileImageMessageHandler
-        from .image_handler import ImageMessageHandler
+        from .image_component_handler import ImageComponentHandler
 
         # 注册图片处理器
-        self.register(ImageMessageHandler())
+        self.register(ImageComponentHandler())
 
         # 注册文件图片处理器
         self.register(FileImageMessageHandler())

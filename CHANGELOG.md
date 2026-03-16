@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/lang/zh-CN/spec/v2.0.0.html).
 
+## [1.1.4] - 2026-03-16
+
+### Changed
+
+- 重命名 image_handler 文件避免混淆
+  - `image_handler.py` → `telegram_image_handler.py`（根目录主处理类）
+  - `handlers/image_handler.py` → `handlers/image_component_handler.py`（组件处理器）
+  - 类名 `ImageMessageHandler` → `ImageComponentHandler`
+  - 更新所有相关引用
+
 ## [1.1.3] - 2026-03-16
 
 ### Fixed
