@@ -71,6 +71,9 @@ class ImageHandler:
         self.nsfw_allow_save = self.nsfw_config.get(
             "allow_save", False
         )  # _conf_schema.json: nsfw.allow_save.default
+        self.nsfw_fail_open = self.nsfw_config.get(
+            "fail_open", True
+        )  # _conf_schema.json: nsfw.fail_open.default
 
         # 如果启用NSFW检测，初始化检测器
         if self.nsfw_enabled:
@@ -96,6 +99,7 @@ class ImageHandler:
             nsfw_checker=self.nsfw_checker,
             nsfw_threshold=self.nsfw_threshold,
             nsfw_allow_save=self.nsfw_allow_save,
+            nsfw_fail_open=self.nsfw_fail_open,
         )
 
         # 处理器工厂（在init中初始化）

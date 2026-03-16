@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/lang/zh-CN/spec/v2.0.0.html).
 
+## [1.2.1] - 2026-03-16
+
+### Fixed
+
+- 完善 NSFW 内容审核功能
+  - 增加检测失败降级策略配置 `nsfw.fail_open`（默认 true，允许保存）
+  - 优化检测失败处理逻辑，支持 fail_open 配置
+  - 修复 config.py 中重复的 nsfw_config 属性
+  - 影响文件: `_conf_schema.json`, `handlers/base.py`, `telegram_image_handler.py`, `config.py`, `handlers/image_component_handler.py`
+
 ## [1.2.0] - 2026-03-16
 
 ### Added

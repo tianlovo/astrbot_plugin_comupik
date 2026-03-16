@@ -58,6 +58,7 @@ class HandlerContext:
     nsfw_checker: Optional["NSFWChecker"] = None
     nsfw_threshold: float = 0.8  # _conf_schema.json: nsfw.threshold.default
     nsfw_allow_save: bool = False  # _conf_schema.json: nsfw.allow_save.default
+    nsfw_fail_open: bool = True  # _conf_schema.json: nsfw.fail_open.default
 
 
 class MessageHandler(ABC):

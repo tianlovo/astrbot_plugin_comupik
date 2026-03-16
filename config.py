@@ -108,6 +108,22 @@ class ComuPikConfig:
         )
 
     @property
+    def nsfw_config(self) -> dict:
+        """获取NSFW审核配置"""
+        # 默认值与 _conf_schema.json: nsfw.*.default 保持一致
+        return self.get(
+            "nsfw",
+            {
+                "enabled": False,  # _conf_schema.json: nsfw.enabled.default
+                "api_url": "http://127.0.0.1:6086",  # _conf_schema.json: nsfw.api_url.default
+                "token": "",  # _conf_schema.json: nsfw.token.default
+                "threshold": 0.8,  # _conf_schema.json: nsfw.threshold.default
+                "allow_save": False,  # _conf_schema.json: nsfw.allow_save.default
+                "fail_open": True,  # _conf_schema.json: nsfw.fail_open.default
+            },
+        )
+
+    @property
     def storage_config(self) -> dict:
         """获取存储配置"""
         # 默认值与 _conf_schema.json: storage.*.default 保持一致
@@ -130,21 +146,6 @@ class ComuPikConfig:
         """获取文件命名模式"""
         # 默认值与 _conf_schema.json: storage.file_naming.default 保持一致
         return self.storage_config.get("file_naming", "{timestamp}_{msg_id}_{random}")
-
-    @property
-    def nsfw_config(self) -> dict:
-        """获取NSFW审核配置"""
-        # 默认值与 _conf_schema.json: nsfw.*.default 保持一致
-        return self.get(
-            "nsfw",
-            {
-                "enabled": False,  # _conf_schema.json: nsfw.enabled.default
-                "api_url": "http://127.0.0.1:6086",  # _conf_schema.json: nsfw.api_url.default
-                "token": "",  # _conf_schema.json: nsfw.token.default
-                "threshold": 0.8,  # _conf_schema.json: nsfw.threshold.default
-                "allow_save": False,  # _conf_schema.json: nsfw.allow_save.default
-            },
-        )
 
     def validate(self) -> tuple[bool, str]:
         """验证配置有效性

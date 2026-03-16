@@ -155,6 +155,12 @@
         "type": "bool",
         "hint": "是否允许保存被判定为NSFW的图片，关闭则会立即删除",
         "default": false
+      },
+      "fail_open": {
+        "description": "检测失败时允许保存",
+        "type": "bool",
+        "hint": "NSFW检测失败时的降级策略，开启则允许保存（避免漏存），关闭则拒绝保存（更严格）",
+        "default": true
       }
     }
   }

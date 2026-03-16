@@ -163,8 +163,18 @@ class ImageComponentHandler(MessageHandler):
                 )
 
                 if nsfw_result is None:
-                    # 检测失败，记录警告但继续处理（降级策略：避免漏存）
-                    logger.warning("[ImageComponentHandler] NSFW检测失败，继续保存图片")
+                    # 检测失败，根据 fail_open 配置决定处理方式
+                    if context.nsfw_fail_open:
+                        # 降级策略：允许保存，避免漏存
+                        logger.warning(
+                            "[ImageComponentHandler] NSFW检测失败，fail_open=true，允许保存"
+                        )
+                    else:
+                        # 严格策略：拒绝保存
+                        logger.warning(
+                            "[ImageComponentHandler] NSFW检测失败，fail_open=false，拒绝保存"
+                        )
+                        return True
                 elif nsfw_result.is_nsfw:
                     # 检测到 NSFW 内容
                     logger.warning(

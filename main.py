@@ -25,7 +25,7 @@ from .telegram_image_handler import ImageHandler
     "astrbot_plugin_comupik",
     "ComuPik",
     "Telegram群组/频道图片自动收集、存储管理及API服务插件",
-    "1.2.0",
+    "1.2.1",
 )
 class ComuPikPlugin(Star):
     """ComuPik插件主类
