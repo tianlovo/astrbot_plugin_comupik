@@ -66,6 +66,18 @@ Telegram群组/频道图片自动收集、存储管理及API服务插件
 | `storage.tmp_subdir` | string | 临时文件子目录名 | "tmp" |
 | `storage.file_naming` | string | 文件命名模式 | "{timestamp}_{msg_id}_{random}" |
 
+### NSFW内容审核配置
+
+| 配置项 | 类型 | 说明 | 默认值 |
+|--------|------|------|--------|
+| `nsfw.enabled` | bool | 是否启用NSFW检测 | false |
+| `nsfw.api_url` | string | NSFW检测服务地址 | "http://127.0.0.1:6086" |
+| `nsfw.token` | string | 访问令牌（可选） | "" |
+| `nsfw.threshold` | float | NSFW判定阈值（0.0-1.0） | 0.8 |
+| `nsfw.allow_save` | bool | 是否允许保存NSFW内容 | false |
+
+> **NSFW检测服务部署**: 参考 https://github.com/helloxz/nsfw
+
 ## 使用指南
 
 ### 1. 配置AstrBot Telegram平台适配器
