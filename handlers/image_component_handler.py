@@ -209,7 +209,6 @@ class ImageComponentHandler(MessageHandler):
                     perceptual_hash, context.deduplication_threshold
                 )
                 if existing:
-                    # 计算相似度
                     from ..database import hamming_distance
 
                     distance = hamming_distance(
@@ -217,15 +216,23 @@ class ImageComponentHandler(MessageHandler):
                     )
                     similarity = max(0, 100 - distance * 10)
 
-                    logger.warning(
-                        f"[ImageComponentHandler] 发现重复图片，跳过保存:\n"
-                        f"  - 当前哈希: {perceptual_hash}\n"
-                        f"  - 已有哈希: {existing.perceptual_hash}\n"
-                        f"  - 汉明距离: {distance}\n"
-                        f"  - 相似度: {similarity}%"
-                    )
-                    # 重复图片检测成功，返回 True 表示已处理（跳过保存）
-                    return True
+                    if similarity >= 40:
+                        logger.warning(
+                            f"[ImageComponentHandler] 发现重复图片，跳过保存:\n"
+                            f"  - 当前哈希: {perceptual_hash}\n"
+                            f"  - 已有哈希: {existing.perceptual_hash}\n"
+                            f"  - 汉明距离: {distance}\n"
+                            f"  - 相似度: {similarity}%"
+                        )
+                        return True
+                    else:
+                        logger.info(
+                            f"[ImageComponentHandler] 发现低相似度图片，继续保存:\n"
+                            f"  - 当前哈希: {perceptual_hash}\n"
+                            f"  - 已有哈希: {existing.perceptual_hash}\n"
+                            f"  - 汉明距离: {distance}\n"
+                            f"  - 相似度: {similarity}%"
+                        )
 
             # 生成文件名
             # 使用组件ID + 随机后缀确保唯一性，支持同消息多张图片
