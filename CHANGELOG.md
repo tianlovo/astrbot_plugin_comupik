@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/lang/zh-CN/spec/v2.0.0.html).
 
+## [1.2.2] - 2026-03-19
+
+### Fixed
+
+- 修复图片去重逻辑误判问题
+  - 问题：汉明距离=8时相似度仅20%，但仍被判定为"重复"并跳过保存
+  - 修复：增加相似度下限检查（>= 40%），低于阈值继续保存
+  - 影响文件: `handlers/image_component_handler.py`
+
 ## [1.2.1] - 2026-03-16
 
 ### Fixed
